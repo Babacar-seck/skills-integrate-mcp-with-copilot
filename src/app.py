@@ -84,8 +84,34 @@ def root():
 
 
 @app.get("/activities")
+
+@app.get("/activities")
 def get_activities():
     return activities
+
+# Tableau de bord synthétique des activités
+@app.get("/dashboard")
+def get_dashboard():
+    """Retourne un tableau de bord synthétique des activités"""
+    dashboard = []
+    for name, info in activities.items():
+        dashboard.append({
+            "name": name,
+            "description": info["description"],
+            "schedule": info["schedule"],
+            "max_participants": info["max_participants"],
+            "current_participants": len(info["participants"]),
+            "remaining_spots": info["max_participants"] - len(info["participants"])
+        })
+    # Statistiques globales
+    total_activities = len(activities)
+    total_students = sum(len(info["participants"]) for info in activities.values())
+    dashboard_stats = {
+        "total_activities": total_activities,
+        "total_students": total_students,
+        "activities": dashboard
+    }
+    return dashboard_stats
 
 
 @app.post("/activities/{activity_name}/signup")
